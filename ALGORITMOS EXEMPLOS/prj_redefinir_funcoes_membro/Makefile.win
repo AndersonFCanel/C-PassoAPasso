@@ -1,0 +1,31 @@
+# Project: prj_redefinir_funcoes_membro
+# Makefile created by Dev-C++ 5.11
+
+CPP      = g++.exe
+CC       = gcc.exe
+WINDRES  = windres.exe
+OBJ      = main_prj_redefinir_funcoes_membro.o implementa_pontos_h.o
+LINKOBJ  = main_prj_redefinir_funcoes_membro.o implementa_pontos_h.o
+LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc
+INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include"
+CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.8.1/include/c++"
+BIN      = prj_redefinir_funcoes_membro.exe
+CXXFLAGS = $(CXXINCS) 
+CFLAGS   = $(INCS) 
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main_prj_redefinir_funcoes_membro.o: main_prj_redefinir_funcoes_membro.cpp
+	$(CPP) -c main_prj_redefinir_funcoes_membro.cpp -o main_prj_redefinir_funcoes_membro.o $(CXXFLAGS)
+
+implementa_pontos_h.o: implementa_pontos_h.cpp
+	$(CPP) -c implementa_pontos_h.cpp -o implementa_pontos_h.o $(CXXFLAGS)

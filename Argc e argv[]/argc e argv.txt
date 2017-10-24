@@ -1,0 +1,8 @@
+argc: (argument count) é um inteiro e possui o número de argumentos 
+com os quais a função main() foi chamada na linha de comando. 
+Ele é, no mínimo 1, pois o nome do programa é contado como 
+sendo o primeiro argumento.
+
+
+argv: (argument values) é um ponteiro para uma matriz de strings. 
+Cada string desta matriz é um dos parâmetros da linha de comando.

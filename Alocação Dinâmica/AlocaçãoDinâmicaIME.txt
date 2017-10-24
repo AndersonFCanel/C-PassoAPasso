@@ -1,0 +1,174 @@
+Alocação dinâmica de memória
+
+As declarações abaixo alocam espaço de memória para diversas variáveis. A alocação é estática (nada a ver com a palavra-chave static), ou seja, acontece antes que o programa comece a ser executado:
+
+char c; 
+int i; 
+int v[10]; 
+Às vezes, a quantidade de memória a alocar só se torna conhecida durante a execução do programa. Para lidar com essa situação é preciso recorrer à alocação dinâmica de memória. A alocação dinâmica é gerenciada pelas funções malloc, realloc e free, que estão na biblioteca stdlib.  Para usar essa biblioteca, você deve incluir a correspondente interface no seu programa por meio de
+
+#include <stdlib.h>
+A função malloc
+
+A função  malloc  (o nome é uma abreviatura de memory allocation) aloca um bloco de bytes consecutivos na memória RAM (= random access memory) do computador e devolve o endereço desse bloco.  O número de bytes é especificado no argumento da função. No seguinte fragmento de código, malloc aloca 1 byte:
+
+char *ptr;
+ptr = malloc (1);
+scanf ("%c", ptr);
+O endereço devolvido por malloc é do tipo genérico  void *.   O programador armazena esse endereço num ponteiro de tipo apropriado. No exemplo acima, o endereço é atribuído ao ponteiro ptr que é do tipo ponteiro-para-char.  (A transformação do ponteiro genérico em ponteiro-para-char é automática; não é necessário escrever ptr = (char *) malloc (1);.)
+
+Para alocar um objeto que ocupa mais de 1 byte, é preciso recorrer ao operador sizeof, que diz quantos bytes o tipo de objeto desejado tem:
+
+typedef struct {
+   int dia, mes, ano; 
+} data;
+data *d;
+d = malloc (sizeof (data));
+d->dia = 31; d->mes = 12; d->ano = 2014;
+Os parênteses na expressão sizeof (data) são necessários porque data é um tipo-de-dados.  (Os parênteses são análogos aos do casting.)  O operador sizeof também pode ser aplicado diretamente a objetos, caso em que os parênteses são redundantes:  se var é uma variável então  sizeof var  é o número de bytes ocupado por var.  (Note que sizeof não uma função mas um operador, tal como return, por exemplo.)
+
+Overhead. Cada invocação de malloc aloca um bloco de bytes consecutivos maior que o solicitado: os bytes adicionais são usados para guardar informações administrativas sobre o bloco de bytes (essas informações permitem que o bloco seja corretamente desalocado, mais tarde, pela função free).  O número de bytes adicionais pode ser grande, qualquer que seja o número o número de bytes solicitado no argumento de malloc.  Não é eficiente, portanto, alocar pequenos blocos;  é preferível alocar um grande bloco e dele retirar pequenas porções na medida do necessário. Felizmente, malloc faz isso de maneira automática, sem que o programador/usuário perceba.
+
+Exercícios 1
+
+Escreva uma função que receba um caractere c e transforme-o em uma string (cadeia de caracteres), ou seja, devolva uma string de comprimento 1 tendo c como único elemento.
+Discuta, passo a passo, o efeito do seguinte fragmento de código:
+   int *v;
+   v = malloc (10 * sizeof (int));
+Discuta o efeito do seguinte fragmento de código:
+   x = malloc (10 * sizeof *x);
+A função free
+
+As variáveis alocadas estaticamente dentro de uma função, também conhecidas como variáveis automáticas ou locais, desaparecem assim que a execução da função termina. Já as variáveis alocadas dinamicamente continuam a existir mesmo depois que a execução da função termina. Se for necessário liberar a memória ocupada por essas variáveis, é preciso recorrer à função free.
+
+A função free desaloca a porção de memória alocada por malloc. A instrução free (ptr) avisa ao sistema que o bloco de bytes apontado por ptr está livre e disponível para reciclagem. A próxima chamada de malloc poderá tomar posse desses bytes.
+
+A função free não deve ser aplicada a uma parte de um bloco de bytes alocado por malloc. Aplique free apenas ao bloco todo.
+
+Convém não deixar ponteiros soltos (= dangling pointers) no seu programa, pois isso pode ser explorado por hackers para atacar o seu computador. Portanto, depois de cada free (ptr), atribua NULL a ptr:
+
+free (ptr);
+ptr = NULL;
+(Atribuir um valor a um ponteiro que se tornou inútil é decididamente deselegante, mas não há como lidar com hackers de maneira elegante…)   Para não cansar o leitor com detalhes repetitivos, estas notas ignoram essa recomendação de segurança.
+
+Exercícios 2
+
+Discuta, passo a passo, o efeito do seguinte fragmento de código:
+   int *p, *q;
+   p = malloc (sizeof (int));
+   *p = 123;
+   q = malloc (sizeof (int));
+   *q = *p;
+   q = p;
+   free (p);
+   free (q); // má ideia...
+   q = NULL; // boa ideia
+O que há de errado com o seguinte fragmento de código?
+   int *v;
+   v = malloc (10 * sizeof (int));
+   v[0] = 999;
+   free (v+1);
+A seguinte função promete devolver um vetor com os 4 primeiros números primos maiores que 1000. Onde está o erro?
+int *primos (void) {
+   int v[3];
+   v[0] = 1009; v[1] = 1013; v[2] = 1019;
+   return v; }
+A seguinte função promete acrescentar uma célula-cabeça à lista encadeada lst e devolver o endereço da nova lista. Onde está o erro?
+celula *acrescentaCabeca (celula *lst) {
+   celula cabeca;
+   cabeca.prox = lst;
+   return &cabeca; }
+Vetores e matrizes
+
+Eis como um vetor (= array) com n elementos inteiros pode ser alocado (e depois desalocado) durante a execução de um programa:
+
+   int *v; 
+   int n, i;
+   scanf ("%d", &n);
+   v = malloc (n * sizeof (int));
+   for (i = 0; i < n; ++i) 
+      scanf ("%d", &v[i]);
+   . . . 
+   free (v);
+(A propósito, veja a observação sobre vetores e endereços no capítulo Endereços e ponteiros.)  Do ponto de vista conceitual (mas apenas desse ponto de vista) a instrução
+
+   v = malloc (100 * sizeof (int));
+tem efeito análogo ao da alocação estática
+
+   int v[100];
+A propósito, a norma ANSI não permite escrever  int v[n]  a menos que n seja uma constante, definida por um #define.
+
+Matrizes.   Matrizes (bidimensionais) são implementadas como vetores de vetores. Uma matriz com m linhas e n colunas é um vetor cada um de cujos m elementos é um vetor de n elementos. O seguinte fragmento de código faz a alocação dinâmica de uma tal matriz:
+
+   int **M; 
+   int i;
+   M = malloc (m * sizeof (int *));
+   for (i = 0; i < m; ++i)
+      M[i] = malloc (n * sizeof (int));
+O elemento de M que está no cruzamento da linha i com a coluna j é denotado por M[i][j].
+
+Exercícios 3
+
+Escreva uma função que desaloque a matriz M alocada acima. Quais devem ser os parâmetros da função?
+Redimensionamento e a função realloc
+
+Às vezes é necessário alterar, durante a execução do programa, o tamanho do bloco de bytes alocado por malloc.  Isso acontece, por exemplo, durante a leitura de um arquivo que se revela maior que o esperado.  Nesse caso, podemos recorrer à função realloc para redimensionar o bloco de bytes.
+
+A função realloc recebe o endereço de um bloco previamente alocado por malloc (ou realloc) e o número de bytes que o bloco redimensionado deve ter. A função aloca o novo bloco, transfere para ele o conteúdo do bloco original, e devolve o endereço do novo bloco.
+
+(O novo bloco pode ser uma simples extensão do bloco original, caso em que o conteúdo do bloco original não precisa ser copiado para o novo bloco. Se, entretanto, um novo bloco for efetivamente alocado, realloc libera o bloco original, recorrendo à função free, depois de copiar seu conteúdo para o novo bloco.  A propósito, o tamanho do novo bloco pode ser menor que o tamanho do original.)
+
+Suponha, por exemplo, que alocamos um vetor de 1000 inteiros e depois decidimos que precisamos de duas vezes mais espaço:
+
+   int *v;
+   v = malloc (1000 * sizeof (int));
+   for (i = 0; i < 990; i++)
+      scanf ("%d", &v[i]);
+   v = realloc (v, 2000 * sizeof (int));
+   for (i = 990; i < 2000; i++)
+      scanf ("%d", &v[i]);
+Para efeito desse exemplo apenas, realloc poderia ser implementada assim:
+
+int *realloc (int *v, unsigned int N) {
+   int *novo, i;
+   novo = malloc (N);
+   for (i = 0; i < 1000; i++)
+      novo[i] = v[i];
+   free (v);
+   return novo;
+}
+É claro que a implementação oficial de realloc na biblioteca stdlib é mais geral e mais eficiente.
+
+Exercícios 4
+
+Suponha dado um arquivo que contém uma sequência de números inteiros. O comprimento da sequência é desconhecido. Escreva uma função que imprima esses números em ordem inversa.  É claro que você terá que ler os números todos, armazenar os números na memória, e depois imprimí-los em ordem inversa.  A dificuldade esté em alocar espaço para uma quantidade de números que só será conhecida quando chegarmos ao fim do arquivo. 
+A memória é finita
+
+Se a memória do computador já estiver toda ocupada, malloc não consegue alocar mais espaço e devolve NULL. Convém verificar essa possibilidade antes de prosseguir:
+
+ptr = malloc (sizeof (data));
+if (ptr == NULL) {
+   printf ("Socorro! malloc devolveu NULL!\n");
+   exit (EXIT_FAILURE);
+}
+A codificação frequente e repetida desse teste é cansativa. Por isso, usaremos, nestas notas, a seguinte função-embalagem (= wrapper-function) de malloc:
+
+void *mallocc (size_t nbytes)
+{
+   void *ptr;
+   ptr = malloc (nbytes);
+   if (ptr == NULL) {
+      printf ("Socorro! malloc devolveu NULL!\n");
+      exit (EXIT_FAILURE);
+   }
+   return ptr;
+}
+O parâmetro de mallocc é do tipo size_t.  Em muitos computadores, size_t é equivalente a unsigned int.
+
+Da mesma forma, podemos preparar uma função-embalagem reallocc para cuidar das situações em que realloc devolve NULL.
+
+Valgrind: ferramenta para detetar problemas com alocação/desalocação de memória e segmentation faults no seu programa
+Atualizado em 2016-04-07
+http://www.ime.usp.br/~pf/algoritmos/
+Paulo Feofiloff
+DCC-IME-USP
