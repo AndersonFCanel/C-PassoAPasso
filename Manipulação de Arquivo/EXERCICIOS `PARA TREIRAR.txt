@@ -1,0 +1,33 @@
+Exercício 9) Implemente um programa que faz o seguinte:
+
+Na tela 1 o sistema oferece ao usuário as seguintes opções (MENU):
+
+1 – Criar um arquivo novo
+2 – Escrever uma palavra em arquivo existente
+3 – Ler o conteúdo de um arquivo existente
+4 – Sair do programa
+b) Caso escolha a opção 1:
+- O sistema solicita do usuário o nome do arquivo.
+- O sistema cria um arquivo com o nome informado.
+
+c) Caso escolha a opção 2:
+O sistema solicita do usuário o nome do arquivo.
+O sistema solicita do usuário a string que será gravada no arquivo.
+Caso o arquivo não exista, o sistema exibe uma mensagem dizendo que o arquivo não existe e volta para a primeira tela
+
+d) Caso escolha a opção 3
+- O sistema solicita do usuário o nome do arquivo.
+- O sistema lê o conteúdo do arquivo.
+- Caso o arquivo não exista, o sistema exibe uma mensagem dizendo que não existe o arquivo.
+
+OBSERVAÇÃO: Para limpar o conteúdo do console, use a função:
+
+system("cls");
+
+OBSERVAÇÃO 2: Para cada funcionalidade, deverá ser criada uma função. Exemplo menu(), ler(), gravar(), criar() e sair()
+
+OBSERVAÇÃO 3: O sistema deve ser modularizado, criar uma biblioteca .h com as funções do sistema.
+
+
+BOA SORTE
+

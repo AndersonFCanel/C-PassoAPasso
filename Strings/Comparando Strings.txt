@@ -1,0 +1,61 @@
+#include <stdio.h>
+ 
+int main(int, char **) 
+{ 
+    char ola[] = "ola"; 
+    char ola2[] = "ola";
+ 
+    if(ola == ola2) 
+        printf("Iguais"); 
+    else
+       printf("Nao sao iguais");
+ 
+    return 0; 
+}
+
+
+#include <stdio.h>
+ 
+bool saoIguais(const char *s1, const char *s2) 
+{         
+    for(int i = 0;s1[i] == s2[i]; ++i) 
+    {                 
+        if(s1[i] == 0) 
+            return true; 
+    } 
+    return false; 
+}
+ 
+int main(int, char **) 
+{ 
+    char ola[] = "ola"; 
+    char ola2[] = "ola";
+ 
+    if(saoIguais(ola, ola2)) 
+        printf("Iguais"); 
+    else
+        printf("Nao sao iguais");
+ 
+    return 0; 
+}
+
+/*
+Agora já sabemos como identificar se duas strings são iguais ou não, um pouco trabalhoso,
+ mas é o único jeito. Para simplificar um pouco a vida, a biblioteca padrão já vem com uma função de comparação de strings chamada strcmp, que funciona de maneira similar a função saoIguais, a diferença é que essa função não verifica apenas se as duas strings são iguais, ela compara as duas, retornando 0 quando são iguais, -1 quando a primeira string vem antes da segunda, ou 1 caso contrário:
+*/
+
+#include <string.h>
+#include <stdio.h>
+ 
+int main(int, char **) 
+{ 
+    char ola[] = "ola"; 
+    char ola2[] = "ola";
+ 
+    if(strcmp(ola, ola2) == 0) 
+        printf("Iguais\n"); 
+    else if(strcmp(ola, ola2) != 0) 
+        printf("Nao sao iguais");
+ 
+    return 0; 
+}

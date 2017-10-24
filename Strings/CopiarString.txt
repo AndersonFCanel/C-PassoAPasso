@@ -1,0 +1,102 @@
+int main(int, char **)
+{
+    char str1[] = "abc";
+    char str2[10];
+ 
+    str2 = str1;
+ 
+    return 0;
+}
+/*
+Apenas lembrando: em C/C++ não existe bem o conceito de variável do tipo string, o que temos são arrays de caracteres terminados em 0 (uma convenção). Em C/C++ não podemos copiar um array diretamente, então a solução mais lógica é simplesmente percorrer o array e copiar cada elemento. Vamos fazer isso então:
+*/
+
+
+void copiaString(char destino[], char origem[], int quantidade)
+{
+    for(int i = 0;i < quantidade; ++i)
+        destino[i] = origem[i];
+}
+ 
+int main(int, char **)
+{
+    char str1[] = "abc";
+    char str2[10];
+ 
+    //Note que dizemos 4, para incluir o 0 do final
+    copiaString(str2, str1, 4);
+ 
+    prinf("String copiada: %s\n", str2);
+ 
+    return 0;
+}
+
+/*
+A função copiaString acima resolve o problema, mas tem uma série problemas:
+
+O usuário precisa informar o tamanho ou a quantidade a ser copiada
+Se o usuário passar o tamanho errado, a função vai fazer coisa errada
+Se o usuário informar um tamanho pequeno, a função não vai incluir o 0 no final da string, quebrando assim a convenção de strings da linguagem.
+Vemos que o grande problema é quanto ao tamanho, mas precisamos realmente saber o tamanho? Lembre-se que strings em C sempre terminam em 0 e já vimos no inicio do artigo como podemos tirar proveito disso para contar caracteres, porque não fazer o mesmo com a cópia? Um exemplo de como fazer:
+*/
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+void copiaString(char destino[], char origem[])
+{
+    for(int i = 0; origem[i] != 0 ; ++i)
+        destino[i] = origem[i];
+}
+ 
+int main(int, char **)
+{
+    char str1[] = "abc";
+    char str2[10];
+ 
+    copiaString(str2, str1);
+ 
+    prinf("String copiada: %s\n", str2);
+ 
+    return 0;
+}
+
+Muito mais simples não? Mas porque re-inventar a roda? Podemos simplesmente usar a função strcpy da biblioteca padrão:
+
+
+int main(int, char **)
+{
+    char str1[] = "abc";
+    char str2[10];
+ 
+    strcpy(str2, str1);
+ 
+    prinf("String copiada: %s\n", str2);
+ 
+    return 0;
+}
+
+A ultima versão da função “copiaString”, assim como strcpy sofrem de alguns problemas, sendo o principal: se a string de destino não for grande o bastante para armazenar a string original, vai ocorrer uma invasão de memória, por esse motivo, não se recomenda mais usar várias das rotinas de string do C, pois muitas sofrem desse risco. Muitos compiladores fornecem versões “seguras” dessas funções, mas que não fazem parte do padrão.
+
+Por fim, a versão de copiaString apresentada aqui é a versão mais didática, sendo que o mais comum é encontrar a implementação na forma como abaixo:
+
+
+void copiaString(char *dest, const char *src)
+{
+    while(*dest++ = *src++);
+}
