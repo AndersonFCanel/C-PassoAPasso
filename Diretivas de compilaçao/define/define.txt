@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define escreva(str) printf("%s", str)
+#define escreval(str) printf("%s\n", str)
+#define leia(variavel)   scanf("%s",&variavel)
+
+#define inc(i) i++
+#define dec(i) i-- // ou i-=
+#define imput(st)
+
+
+/* run this program using the console pauser or add your own getch, system("pause") or input loop */
+
+int main(int argc, char *argv[]) {
+     char nome[25];
+     escreval("anderson");
+     
+
+     leia(nome);
+     escreva("seu nome :");
+     escreva(nome);
+	return 0;
+}
+
+
+
+
+

@@ -1,0 +1,204 @@
+Funções: passagem de parâmetros
+
+Resumo:
+
+A linguagem de programação C permite que os parâmetros sejam passados para as funções de duas maneiras, por valor e por referência. Na passagem por valor, como o próprio nome diz, uma expressão pode ser utilizada na chamada. O valor da expressão é calculada, e o valor resultante é passado para a execução da função. Na passagem por referência, o endereço de uma variável deve ser passado na chamada da função. Dessa forma, a função pode modificar a variável diretamente, o que em geral não é recomendável, mas há situações onde esse recurso é necessário, por exemplo, para a criação de funções que devolvem mais de um valor.
+
+Descrição:
+
+Até o momento, vimos apenas uma forma de passagem de parâmetros, conhecida como passagem por valor. Essa forma permite que as variáveis de uma função sejam protegidas, ou seja, apenas a função onde as variáveis foram declaradas pode modificar seu conteúdo. Permitir que uma função modifique o conteúdo de outra pode ser muito perigoso, mas há situações onde isso é necessário. Vamos primeiro lembrar como funciona a passagem por valor e depois introduzir o conceito de passagem por refência.
+
+Passagem por Valor
+
+É a forma mais comum utilizada para passagem de parâmetros. Por exemplo, considere a família de funções trigonométricas, como seno, cosseno, etc. A função seno, por exemplo, recebe o valor de um ângulo (um número real) e devolve o seno desse ângulo. Se tivermos as funções seno e cosseno, podemos facilmente definir uma função tangente. Em projetos grandes de desenvolvimento de software, grupos de programadores podem trabalhar no desenvolvimento de funções distintas e juntar os seus trabalhos uma vez que tenham suas funções prontas. Para isso, basta que cada grupo conheça o protótipo das funções que precisa utilizar, e ao final, um programa chamodo "linker" é responsável por juntar os pedaços e construir um programa executável. Por exemplo, considere que nós temos disponíveis os seguintes protótipos para as funções seno e cosseno:
+
+float seno (float angulo);
+float cosseno (float angulo);
+Conhecendo esses protótipos, podemos escrever a função tangente da seguinte forma:
+
+float tangente (float angulo) 
+{
+   float s, c;
+   s = seno(angulo);
+   c = cosseno(angulo);
+   return s/c;
+}
+Essa função claramente calcula o seno antes de calcular o cosseno. Imagine se a função seno pudesse modificar o valor do parâmetro angulo. Nesse caso, o valor passado para a função cosseno seria diferente do valor original usado para o seno, e o resultado da função tangente estaria incorreto. A passagem por valor consegue evitar esse tipo de "efeito colateral" através da criação de variáveis locais para os parâmetros. Quando uma função é chamada, essas variáveis são carregadas, como em atribuições, antes do início da execução do corpo da função. Vamos falar um pouco mais do escopo de variáveis a seguir.
+Escopo de variáveis
+
+O escopo de uma variável é definido pelas regiões (blocos) onde a variável pode ser utilizada. Por exemplo, as variáveis declaradas no início do corpo da função main podem ser utilizadas em qualquer lugar dentro da função main, porém apenas DENTRO da main, ou seja, não podem ser utilizadas em outra função. Variáveis declaradas no mesmo escopo precisam ter nomes diferentes, mas nomes podem ser "reaproveitados" em outros escopos. Vejamos o exemplo abaixo:
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int fat (int n) 
+{
+   int res = 1;
+   while (n > 1) {
+      res = res * n;
+      n--;
+   }
+   return res;
+}
+
+int main () 
+{
+   int n, res;
+   printf("Entre com o valor de n: ");
+   scanf("%d", &n);
+   res = fat(n+1) / (n+1);
+   printf("Fatorial de %d = %d\n", n, res );
+   system("pause");
+   return 0;
+}
+Observe que a função main e fat possuem ambas variáveis com o nome res, e que main possui uma variável chamada n, que é o nome do parâmetro da função fat. Procure não se confundir, pois apesar do mesmo nome, elas são variáveis diferentes. Para a função fat, o parâmetro n funciona como uma variável local (ou seja, válida dentro da função apenas), juntamente com a variável res. A diferença é que o parâmetro n recebe seu valor no instante da chamada. Vamos simular esse programa para a entrada 2.
+O programa sempre inicia sua execução pela função main, que solicita a entrada de um valor para n. A linha res = fat(n+1)/(n+1); chama a função fat. Como n=2 (entrada do programa), então o valor 3 ( é passado para a função, ou seja, esse valor é atribuido ao parâmetro n e a função fat começa a executar seu corpo. O fatorial de 3 é calculado e o valor 6 é atribuido à variável res. Observe que o parâmetro n é utilizado como variável, o que é permitido pela linguagem C. Esse parâmetro é decrementado até 1, porém, como são variáveis diferentes, o valor de n dentro de main continua sendo 2. Ao terminar o chamado, a função fat devolve o valor 6 ao lugar onde foi chamado dentro da função main, e o programa continua para calcular o valor da expressão fat(n+1)/(n+1). Como o valor de n continua 2, o resultado da divisão é . Esse valor é atribuído à variável res. O último printf imprime o valor de n e res, que correspondem aos valores 2 e 2, respectivamente.
+Passagem por Referência
+
+Sempre que possível é recomendável utilizar a forma de passagem por valor, para evitar "efeitos colaterais", mas há situações onde esses efeitos são desejáveis, por exemplo, quando desejamos criar uma função que retorne mais de um valor. As funções que vimos até agora, seno, cosseno, potencia, fatorial, etc, só devolvem um valor, mas que outras funções, que trabalhem com números imaginários por exemplo, precisam retornar 2 valores. Por exemplo, tente escrever uma função que retorne o quadrado de um número imaginário.
+
+Sabemos que um número imaginário (ou complexo)  possui uma parte real  e outra complexa , e podemos escrever esse número como , onde , e o quadrado de  como . Assim, a variável complexa  tem parte real  e parte complexa .
+
+Poderíamos fazer uma função para retornar apenas a parte real, e outra para retornar apenas a parte imaginária. Mas o C permite criar uma função que retorne os dois valores simultaneamente. Observe a seguinte função:
+
+void complexo2 (float *r, float *t)
+{
+   float real;
+
+   real = (*r * *r) - (*t * *t);
+   *t = 2 * *r * *t;
+   *r = real;
+}
+Funções do tipo void como definidas acima correspondem a funções que não retornam um valor. No entanto, o símbolo '*' na definição dos parâmetros real e imaginário da função complexo2 indicam que esses parâmetros PODEM ser modificados dentro da função, ou seja, alterações que esses parâmetros sofrerem serão sentidas FORA da função, que correspondem aos efeitos colaterais que NÃOO OCORREM quando os parâmetros são passados por valor (sem o uso do caractere '*').
+
+Note ainda que essa notação pode ser confusa, pois como o parâmetro de entrada é *r e *t, dentro da função você precisa utilizar esses mesmos "nomes", e isso pode ficar confuso quando utilizamos esses parâmetros para realizar multiplicações.
+
+Vamos agora ver um programa que utiliza essa função: 
+#include <stdio.h>
+#include <stdlib.h>
+
+/* definicao do prototipo */
+void complexo2 (float *r, float *t);
+
+int main () 
+{
+   float a, b;
+
+   printf ("Entre com um numero complexo (2 numeros inteiros): ");
+   scanf("%f %f", &a, &b);
+   complexo2 ( &a, &b);
+   printf("O quadrado do número complexo é %f + i %f\n", a, b);
+
+   system("pause");
+   return 0;
+}
+Observe que no main são declaradas apenas duas variáveis reais a e b. Observe também que tanto na chamada da função scanf quanto na chamada da função complexo2, as variáveis a e b são precedidas pelo caractere '&'. Nesse caso, esse caractere indica que queremos que esses parâmetros sejam modificados pela função, e retornem os valores apropriados. No caso da função scanf, esses valores correspondem aos valores digitados pelo usuário, mas no caso da função complexo2, esses valores são computados pela função. Finalmente, observe também que os próprios valores armazenados nas variáveis a e b são utilizados como entrada da função complexo2, ou seja, esses valores são utilizados como parte real e imaginária para calcular o valor do quadrado do número complexo, e ao mesmo tempo são utilizados para devolver o resultado. Assim, no caso da scanf, os parâmetros a e b são utilizados apenas para saída, e no caso da complexo2, os parâmetros a e b são utilizados como entrada E saída da função.
+
+Já na função printf, as variáveis a e b não são precedidas pelo caractere '&', e portanto NÃO SÃO modificadas pela função printf.
+
+RESUMINDO, quando desejamos criar uma função que devolva mais de um valor, precisamos definir esses parâmetros com um caractere '*' no protótipo da função, e ao chamar a função, os parâmetros utilizados na chamada correspondentes à saída precisam ser precedidos pelo caractere '&' para indicar que eles podem ser modificados pela função chamada.
+
+Ponteiros ou Apontadores
+
+Se você entendeu como criar funções que modificam os parâmetros (usando '*') e como chamar essas funções em seus programas (usando '&'), você não precisa saber o que são ponteiros ou apontadores por enquanto, mas se você quiser saber como isso é implementado na linguagem C, então continue com a sua leitura.
+
+Um apontador ou ponteiro é um tipo de variável que não contém um valor, mas um endereço. Lembre-se que a memória do computador é organizada na forma de uma tabela. Cada linha da tabela possui um endereço, e em cada endereço podemos armazenar um valor. Cada variável, ao ser criada, é associada a um endereço. Quando uma variável é utilizada em uma expressão do lado direito de uma atribuição, seu endereço é utilizado para buscar seu valor, e esse valor é utilizado para calcular o resultado da expressão. Quando uma variável é utilizada do lado esquerdo, seu endereço é utilizado para armazenar o resultado da expressão correspondente na memória. Assim, cada variável possui um endereço diferente e único, e os apontadores são variáveis capazes de manipular endereços.
+
+Para declarar uma variável do tipo ponteiro utilizamos a seguinte estrutura:
+
+tipo *nome;
+O asterisco ('*') é a indicação que a variável nome é um apontador, e o endereço apontado é interpretado como um valor do tipo tipo. Portanto, os parâmetros de entrada da função complexo2 são na verdade apontadores. O uso de variáveis de tipo apontador é bastante simples:
+
+int x,y;     /* duas variáveis inteiras */
+int *px,*py; /* dois apontadores para inteiros */
+x = 1;  /* atribui à variável x o valor 1. */
+y = 2;  /* atribui à variável y o valor 2. */
+px= &x; /* atribui ao apontador px o endereco da variavel x. */
+py= &y; /* atribui ao apontador py o endereco da variavel y. */
+O significado das atribuições acima é o seguinte. O operador '&' é um operador unário (de dereferência) que retorna o endereço de seu operando. Assim, podemos manipular o endereço apontado por uma variável de tipo ponteiro.
+Um outro operador importante é o operador '*' (operador unário de referência) que devolve o valor contido em uma posição de memória apontada por uma variável de tipo ponteiro.
+
+Por exemplo:
+
+int x,y;
+int *px,*py;
+x = 1; /* atribui à variável x o valor 1. */
+y = 2; /* atribui à variável y o valor 2. */
+px= &x; /* atribui ao ponteiro px o endereco da variavel x. */
+py= &y; /* atribui ao ponteiro py o endereco da variavel y. */
+printf("O endereco de x eh %d e o valor de x eh %d",px,*px);
+onde o *px significa, literalmente, o valor da posição de memória apontado por px.
+Vamos examinar um outro exemplo de funções utilizando apontadores:
+void Troca(int *px, int *py); /* Prototipo. */
+
+int main() {
+   int x=4,y=7;
+
+   /** Ao chamar a funcao passamos o endereco
+    * das variaveis x e y como parametro.
+   */
+   Troca(&x,&y);
+   printf("Troca: x vale %d e y vale %d",x,y);
+   Troca(&x,&y);
+   printf("Destroca: x vale %d e y vale %d",x,y);
+
+   system("pause");
+   return 0;
+}
+
+void Troca(int *px, int *py)
+/* Troca os valores das variaveis apontadas por px e py. */
+{
+   int n;
+
+   n= *py;
+   *py= *px;
+   *px= n;
+}
+Ao examinarmos a função Troca, verificamos que houve manipulação nos valores das posições cujos endereços foram passados como parâmetro. Deste modo é que conseguimos implementar funções cuja ação é estendida a mais de uma variável (ou seja, retorna mais de um valor).
+Vamos ver mais um exemplo, usando agora a função Troca em um programa para ordenar 3 inteiros em ordem crescente, como abaixo:
+#include <stdio.h>
+#include <stdlib.h>
+
+/* prototipo */
+void Troca(int *px, int *py);
+
+int main () 
+{
+   int a, b, c;
+
+   printf ("Digite 3 numeros inteiros: ");
+   scanf("%d %d %d", &a, &b, &c);
+   if (a > b) Troca (&a, &b);
+   if (b > c) Troca (&b, &c);
+   if (a > b) Troca (&a, &b);
+   printf("Em ordem crescente: %d %d %d\n", a, b, c);
+
+   system("pause");
+   return 0;
+}
+Por exemplo, para a seqüência 3 2 1, teríamos:
+
+
+a	b	c
+início:	3	2	1
+1o if :	2	3	1
+2o if :	2	1	3
+3o if :	1	2	3
+e portanto a saída seria 
+Em ordem crescente: 1 2 3
+
+Erros comuns com funções
+
+A seguir listamos alguns erros comuns cometidos quando se começa a aprender funções. Procure evita-los:
+
+usar scanf dentro de funções para ler os parâmetros 
+Lembre-se que os parâmetros são passados para a função, por valor ou referência, na hora da sua chamada. Esses valores não devem ser lidos novamente através da scanf.
+esquecer o '&' na passagem de parâmetros por referência 
+Nesse caso, o valor da variável é interpretado como um endereço, e a função vai tentar modificar uma área da memória que pode estar sendo usada por outro programa. Nos sistemas modernos há proteções que impedem que esses erros aconteçam.
+esquecer o '*' no uso de um parâmetro passado por referência 
+Nesse caso, o valor da variável é um endereço e não um valor, e os cálculos serão portanto inválidos.
+usar um apontador sem inicializar 
+usar variáveis sem inicialização já causam problemas, mas usar um apontadores sem inicialização pode causar problemas ainda mais sérios, pois você pode alterar endereços da memória que não foram reservados ao seu programa, mas já estão sendo utilizados por outros programas.
+confundir o escopo de variáveis com mesmo nome 
+é impressionante que não tenhamos paciência para escrever nomes de variáveis que correspondam a sua função, e ao invés utilizemos letras como i, j, k, etc. Assim não é difícil confundir variáveis com mesmo nome mas em escopos diferentes.

@@ -1,0 +1,9 @@
+Doretivas mais utilizadas
+
+#include
+-------------------------------
+#define    #undef
+-------------------------------
+#ifdef     #ifndef      #endif
+-------------------------------
+#if        #else        #elif
